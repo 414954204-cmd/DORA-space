@@ -1456,9 +1456,18 @@
         return this.getUserA() && this.getUserB();
       },
       
-      // 生成邀请链接
+      // 生成邀请链接（包含用户A的结果数据）
       generateInviteLink(inviterId) {
+        const userA = this.getUserA();
         const baseUrl = window.location.origin + window.location.pathname;
+        
+        if (userA && userA.answers) {
+          // 将用户A的答案编码到URL中
+          const answersStr = userA.answers.join(',');
+          const doraCode = userA.doraCode || '';
+          return baseUrl + '?inviter=' + inviterId + '&codeA=' + doraCode + '&answersA=' + answersStr;
+        }
+        
         return baseUrl + '?inviter=' + inviterId;
       },
       
@@ -2056,8 +2065,21 @@
       
       // 判断是用户A还是用户B
       const inviterId = DuoStorage.getUrlParam('inviter');
+      const codeA = DuoStorage.getUrlParam('codeA');
+      const answersA = DuoStorage.getUrlParam('answersA');
       
       if (inviterId) {
+        // 用户B：通过URL参数获取用户A的数据（跨设备场景）
+        if (codeA && answersA) {
+          const userAFromUrl = {
+            userId: inviterId,
+            doraCode: codeA,
+            answers: answersA.split(',').map(Number),
+            timestamp: Date.now()
+          };
+          DuoStorage.saveUserA(userAFromUrl);
+        }
+        
         // 用户B：保存结果并检查是否显示双人报告
         DuoStorage.saveUserB(resultData);
         
@@ -2126,6 +2148,9 @@
       modal.classList.remove('active');
     }
 
+    // 腾讯文档收集表地址
+    const COLLECTION_FORM_URL = 'https://docs.qq.com/smartsheet/DVGZqdGxJcUJLb0ZY';
+    
     function submitForm() {
       const name = document.getElementById('nameInput').value.trim();
       const phone = document.getElementById('phoneInput').value.trim();
@@ -2137,7 +2162,28 @@
       
       if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
       closeModal();
-      showToast('已收到，Aesthetic 引擎正在生成方案');
+      
+      // 获取当前DORA代码
+      const doraCode = document.getElementById('resultCode').textContent;
+      const doraName = document.getElementById('resultName').textContent;
+      
+      // 格式化数据用于粘贴到腾讯文档
+      const dataText = `称呼: ${name}\n手机号: ${phone}\nDORA代码: ${doraCode}\n人格类型: ${doraName}`;
+      
+      // 复制到剪贴板
+      navigator.clipboard.writeText(dataText).then(() => {
+        showToast('数据已复制，正在跳转收集表...');
+        // 3秒后跳转到腾讯文档收集表
+        setTimeout(() => {
+          window.location.href = COLLECTION_FORM_URL;
+        }, 2000);
+      }).catch(() => {
+        // 如果复制失败，直接跳转
+        showToast('正在跳转收集表...');
+        setTimeout(() => {
+          window.location.href = COLLECTION_FORM_URL;
+        }, 1500);
+      });
     }
 
     function shareLink() {
@@ -2224,7 +2270,30 @@
       
       if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
       closeDuoModal();
-      showToast('已收到，双人方案正在准备中');
+      
+      // 获取双人DORA代码
+      const userA = DuoStorage.getUserA();
+      const userB = DuoStorage.getUserB();
+      const codeA = userA ? userA.doraCode : '';
+      const codeB = userB ? userB.doraCode : '';
+      
+      // 格式化数据用于粘贴到腾讯文档
+      const dataText = `称呼: ${name}\n手机号: ${phone}\n用户A代码: ${codeA}\n用户B代码: ${codeB}`;
+      
+      // 复制到剪贴板
+      navigator.clipboard.writeText(dataText).then(() => {
+        showToast('数据已复制，正在跳转收集表...');
+        // 3秒后跳转到腾讯文档收集表
+        setTimeout(() => {
+          window.location.href = COLLECTION_FORM_URL;
+        }, 2000);
+      }).catch(() => {
+        // 如果复制失败，直接跳转
+        showToast('正在跳转收集表...');
+        setTimeout(() => {
+          window.location.href = COLLECTION_FORM_URL;
+        }, 1500);
+      });
     }
 
     function restartDuoTest() {
