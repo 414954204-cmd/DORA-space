@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="referrer" content="no-referrer">
+  <title>DORA 空间美学测评</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      /* 科技感渐变蓝配色方案 */
+      --bg-dark: #06080c;
+      --bg-card: rgba(14, 165, 233, 0.05);
+      --bg-card-light: rgba(14, 165, 233, 0.08);
+      --text-main: #f0f4f8;
+      --text-muted: #64748b;
+      --accent-blue: #0ea5e9;
+      --accent-blue-light: #38bdf8;
+      --accent-blue-dark: #0369a1;
+      --accent-cyan: #22d3ee;
+      --accent-purple: #8b5cf6;
+      --blue-glow: rgba(14, 165, 233, 0.5);
+      --cyan-glow: rgba(34, 211, 238, 0.3);
+      --gradient-tech: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%);
+      --gradient-blue: linear-gradient(135deg, #0ea5e9 0%, #0891b2 100%);
+      --gradient-glow: linear-gradient(135deg, rgba(14, 165, 233, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+      
+      /* 玻璃拟态 */
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-blur: blur(12px);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    /* 动态科技感背景 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 165, 233, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+        radial-gradient(ellipse 50% 30% at 10% 80%, rgba(34, 211, 238, 0.08) 0%, transparent 30%);
+      pointer-events: none;
+      z-index: -1;
+      animation: bgPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes bgPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Noise texture */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Screen base */
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.98);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .screen.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Screen exit animation */
+    .screen.exit {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.98);
+    }
+
+    /* ===== SCREEN 1: LANDING ===== */
+    .landing-screen {
+      justify-content: center;
+      align-items: center;
+      padding: 40px 28px;
+      text-align: center;
+      background: transparent;
+    }
+
+    .landing-logo {
+      font-family: 'Outfit', sans-serif;
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: 16px;
+      background: var(--gradient-tech);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+      animation: fadeInUp 0.8s ease-out 0.2s both, logoGlow 3s ease-in-out infinite;
+      position: relative;
+    }
+
+    @keyframes logoGlow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(14, 165, 233, 0.3)); }
+      50% { filter: drop-shadow(0 0 30px rgba(14, 165, 233, 0.5)); }
+    }
+
+    .landing-powered {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      opacity: 0.6;
+      animation: fadeInUp 0.8s ease-out 0.8s both;
+    }
+
+    .landing-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 48px;
+      animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .landing-btn {
+      width: 200px;
+      height: 50px;
+      border: 1px solid var(--accent-blue);
+      background: transparent;
+      color: var(--accent-blue);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      letter-spacing: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+
+    .landing-btn:hover {
+      background: var(--accent-blue);
+      color: var(--bg-dark);
+    }
+
+    .landing-btn:active {
+      transform: scale(0.97);
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== SCREEN 2: QUIZ ===== */
+    .quiz-screen {
+      padding: 16px 12px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .quiz-progress {
+      flex: 1;
+      height: 2px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 1px;
+      margin-right: 14px;
+      position: relative;
+    }
+
+    .quiz-progress-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: var(--accent-blue);
+      border-radius: 1px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .quiz-count {
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    .quiz-dimension {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .quiz-question {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.4;
+      margin-bottom: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .quiz-option {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .quiz-option:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(14, 165, 233, 0.2);
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+
+    .quiz-option:active {
+      transform: scale(0.98);
+    }
+
+    .quiz-option::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+      pointer-events: none;
+    }
+
+    .quiz-option-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform 0.5s ease;
+    }
+
+    .quiz-option:hover .quiz-option-img {
+      transform: scale(1.05);
+    }
+
+    .quiz-option-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+      display: flex;
+      align-items: flex-end;
+      padding: 12px 14px;
+      transition: background 0.3s ease;
+    }
+
+    .quiz-option-text {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #ffffff;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .quiz-option.selected {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
+      border-color: var(--accent-blue);
+    }
+
+    .quiz-option.selected .quiz-option-overlay {
+      background: linear-gradient(to top, rgba(14,165,233,0.95) 0%, rgba(14,165,233,0.4) 50%, transparent 100%);
+    }
+
+    /* ===== SCREEN 3: RESULT ===== */
+    .result-screen {
+      padding: 0;
+      background: var(--bg-dark);
+      min-height: 100vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Section 1: Identity Lock */
+    .result-identity {
+      padding: 32px 20px 24px;
+      text-align: center;
+      position: relative;
+    }
+
+    .result-identity::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      right: 20px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.3), transparent);
+    }
+
+    .result-brand {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      opacity: 0.6;
+    }
+
+    .result-visual {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1a1a1d 0%, #0d0d0f 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-visual::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 40%, rgba(33, 150, 243, 0.1) 50%, transparent 60%);
+      animation: scanLight 3s ease-in-out infinite;
+    }
+
+    @keyframes scanLight {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .result-cat-icon {
+      font-size: 72px;
+      opacity: 0.9;
+    }
+
+    .result-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .result-code {
+      font-family: 'Outfit', sans-serif;
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      background: var(--gradient-tech);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .result-code::after {
+      content: attr(id);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-tech);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: blur(20px);
+      opacity: 0.4;
+      z-index: -1;
+    }
+
+    .result-name {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 500;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .result-quote {
+      font-size: 12px;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.7;
+      padding: 0 16px;
+    }
+
+    /* Section 2: View Toggle */
+    .result-toggle {
+      padding: 14px 16px;
+      background: var(--bg-dark);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .toggle-container {
+      display: flex;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 3px;
+      position: relative;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .toggle-btn {
+      flex: 1;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+
+    .toggle-btn.active {
+      color: #fff;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: calc(50% - 3px);
+      height: 34px;
+      background: var(--gradient-blue);
+      border-radius: 20px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+    }
+
+    .toggle-slider.right {
+      transform: translateX(100%);
+    }
+
+    /* Section 3: Dynamic Content */
+    .result-content {
+      padding: 0 0 20px;
+      min-height: 200px;
+    }
+
+    /* View A: Resident Report (Magazine style) */
+    .view-resident {
+      padding: 20px 16px;
+      background: var(--bg-card);
+      position: relative;
+    }
+
+    .view-resident::before {
+      content: '';
+      position: absolute;
+      left: 16px;
+      top: 20px;
+      bottom: 20px;
+      width: 1px;
+      background: var(--accent-blue);
+      opacity: 0.4;
+    }
+
+    .resident-title {
+      font-size: 9px;
+      color: var(--accent-blue);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      padding-left: 10px;
+    }
+
+    .resident-text {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-muted);
+      padding-left: 10px;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    .resident-text p {
+      margin-bottom: 12px;
+    }
+
+    .resident-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* View B: Architect Params (Code/Blueprint style) */
+    .view-architect {
+      padding: 16px;
+      background: 
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        var(--bg-card-light);
+      background-size: 20px 20px;
+      display: none;
+    }
+
+    .view-architect.active {
+      display: block;
+    }
+
+    .view-resident.hidden {
+      display: none;
+    }
+
+    .architect-header {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 11px;
+      color: var(--accent-blue);
+      margin-bottom: 16px;
+      padding: 12px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 6px;
+      border-left: 2px solid var(--accent-blue);
+    }
+
+    .architect-params {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .param-item {
+      padding: 14px 16px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: var(--glass-blur);
+      transition: all 0.3s ease;
+    }
+
+    .param-item:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 20px rgba(14, 165, 233, 0.15);
+    }
+
+    .param-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--gradient-blue);
+    }
+
+    .param-dim {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .param-strategy {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .param-command {
+      font-family: 'Outfit', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      padding-left: 12px;
+      border-left: 2px solid rgba(14, 165, 233, 0.2);
+    }
+
+    .architect-footer {
+      margin-top: 20px;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      opacity: 0.5;
+      text-align: right;
+    }
+
+    /* Fade transition between views */
+    .view-resident,
+    .view-architect {
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Section 4: Aesthetic (hidden in toggle mode) */
+    .result-aesthetic {
+      display: none;
+    }
+
+    .result-aesthetic.show {
+      display: block;
+    }
+
+    .aesthetic-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .aesthetic-icon {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--accent-blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--accent-blue);
+    }
+
+    .aesthetic-title {
+      font-size: 10px;
+      color: var(--accent-blue);
+      letter-spacing: 2px;
+    }
+
+    .aesthetic-dimensions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .dimension-item {
+      padding: 14px 16px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      border-left: 2px solid var(--accent-blue);
+    }
+
+    .dimension-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .dimension-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-blue);
+    }
+
+    .dimension-name {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .dimension-trigger {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .aesthetic-footer {
+      margin-top: 20px;
+      font-size: 10px;
+      color: var(--text-muted);
+      opacity: 0.5;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Section 4: Actions */
+    .result-actions {
+      padding: 20px 16px 32px;
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(to top, var(--bg-dark) 60%, transparent);
+    }
+
+    .btn-primary {
+      width: 100%;
+      height: 48px;
+      border: none;
+      background: var(--gradient-blue);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      position: relative;
+      overflow: hidden;
+      animation: btnBreath 3s ease-in-out infinite;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+    }
+
+    @keyframes btnBreath {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); }
+      50% { box-shadow: 0 0 25px 6px rgba(14, 165, 233, 0.25); }
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98) translateY(0);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      height: 48px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      backdrop-filter: var(--glass-blur);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-light);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue-light);
+    }
+      letter-spacing: 1px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:active {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .btn-text {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    /* ===== DUO REPORT ===== */
+    .duo-screen {
+      padding: 16px 14px 24px;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .duo-report-content {
+      flex: 1;
+    }
+
+    .duo-header {
+      text-align: center;
+      padding: 12px 0 16px;
+    }
+
+    .duo-cat-icons {
+      font-size: 60px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .duo-cat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .duo-cat-code {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      letter-spacing: 2px;
+    }
+
+    .duo-vs {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      color: var(--text-muted);
+      opacity: 0.5;
+      margin: 0 2px;
+    }
+
+    .duo-title {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      background: var(--gradient-tech);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .duo-match-rate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 24px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .rate-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      background: var(--gradient-tech);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .rate-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .duo-section {
+      margin-bottom: 16px;
+    }
+
+    .duo-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .duo-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      border-left: 3px solid transparent;
+      transition: all 0.3s ease;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .duo-item:hover {
+      transform: translateX(4px);
+      border-left-width: 4px;
+    }
+
+    .duo-item-match {
+      border-left-color: #10b981;
+    }
+
+    .duo-item-conflict {
+      border-left-color: #f59e0b;
+    }
+
+    .duo-check, .duo-warning {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .duo-item-content {
+      flex: 1;
+    }
+
+    .duo-item-dim {
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .duo-item-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .duo-empty {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 16px;
+    }
+
+    .duo-advice {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .duo-advice-list {
+      padding-left: 16px;
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .duo-advice-list li {
+      margin-bottom: 6px;
+    }
+
+    .duo-actions {
+      padding: 12px 14px 20px;
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(to top, var(--bg-dark) 70%, transparent);
+    }
+
+    .duo-actions .btn-secondary {
+      margin-top: 10px;
+    }
+
+    /* ===== 双人报告新增样式 ===== */
+    .duo-section-match {
+      margin-bottom: 16px;
+    }
+
+    .duo-section-conflict {
+      margin-bottom: 16px;
+    }
+
+    .duo-section-match .duo-section-title {
+      color: #10b981;
+    }
+
+    .duo-section-conflict .duo-section-title {
+      color: #f59e0b;
+    }
+
+    .duo-item-match {
+      border-left-color: #10b981 !important;
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .duo-item-conflict {
+      border-left-color: #f59e0b !important;
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .duo-item-insight {
+      font-size: 11px;
+      color: #f59e0b;
+      line-height: 1.5;
+      margin-top: 3px;
+    }
+
+    .duo-aesthetic-solution {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+      border: 1px solid rgba(14, 165, 233, 0.25);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .duo-aesthetic-solution::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-tech);
+    }
+
+    .aesthetic-solution-header {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .aesthetic-solution-text {
+      font-size: 11px;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .match-rate-bar {
+      width: 100%;
+      height: 5px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .match-rate-fill {
+      height: 100%;
+      background: var(--gradient-tech);
+      border-radius: 3px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===== INVITE TOAST ===== */
+    .invite-toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--glass-bg);
+      border: 1px solid var(--accent-blue);
+      padding: 14px 24px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 100;
+      backdrop-filter: var(--glass-blur);
+      box-shadow: 0 8px 32px rgba(14, 165, 233, 0.3);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent-blue-light);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .invite-icon {
+      font-size: 16px;
+    }
+
+    .invite-text {
+      font-size: 12px;
+      color: var(--accent-blue);
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 12, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      width: 88%;
+      max-width: 320px;
+      background: #111113;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 28px 24px;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .modal-input {
+      width: 100%;
+      height: 48px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 0 16px;
+      color: var(--text-main);
+      font-size: 14px;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .modal-input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .modal-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .modal-submit {
+      width: 100%;
+      height: 48px;
+      border: none;
+      background: var(--accent-blue);
+      color: var(--bg-dark);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .modal-close {
+      width: 100%;
+      height: 40px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .modal-desc {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .modal-hint {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      opacity: 0.6;
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: var(--accent-blue);
+      color: var(--bg-dark);
+      padding: 16px 32px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .toast.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Screen 1: Landing -->
+    <div class="screen landing-screen active" id="landing">
+      <h1 class="landing-logo">DORA</h1>
+      <p class="landing-subtitle">探索你的居住人格代码<br>由 Aesthetic 美学引擎驱动</p>
+      <button class="landing-btn" onclick="startQuiz()">开启测评</button>
+      <p class="landing-powered">DORA × AESTHETIC ENGINE</p>
+    </div>
+
+    <!-- Screen 2: Quiz -->
+    <div class="screen quiz-screen" id="quiz">
+      <div class="quiz-header">
+        <div class="quiz-progress">
+          <div class="quiz-progress-bar" id="progressBar"></div>
+        </div>
+        <span class="quiz-count" id="quizCount">01/08</span>
+      </div>
+      <p class="quiz-dimension" id="dimensionLabel">DOMAIN · 01/02</p>
+      <h2 class="quiz-question" id="questionText"></h2>
+      <div class="quiz-options" id="quizOptions"></div>
+    </div>
+
+    <!-- Screen 3: Result -->
+    <div class="screen result-screen" id="result">
+      <!-- Section 1: Identity -->
+      <div class="result-identity">
+        <p class="result-brand">DORA × Aesthetic Engine</p>
+        <div class="result-visual">
+          <span class="result-cat-icon">🐱</span>
+        </div>
+        <p class="result-label">YOUR DORA CODE</p>
+        <h2 class="result-code" id="resultCode">ECMV</h2>
+        <h3 class="result-name" id="resultName">先锋主理人</h3>
+        <p class="result-quote" id="resultQuote">"你不是在装修一个家，你是在搭建一个先锋的舞台。"</p>
+      </div>
+
+      <!-- Section 2: View Toggle -->
+      <div class="result-toggle">
+        <div class="toggle-container">
+          <div class="toggle-slider" id="toggleSlider"></div>
+          <div class="toggle-btn active" id="btnResident" onclick="switchView('resident')">
+            <span>👤</span> 居住者报告
+          </div>
+          <div class="toggle-btn" id="btnArchitect" onclick="switchView('architect')">
+            <span>📐</span> 架构师参数
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Dynamic Content -->
+      <div class="result-content">
+        <!-- View A: Resident Report -->
+        <div class="view-resident" id="viewResident">
+          <p class="resident-title">RESIDENT DIAGNOSIS</p>
+          <div class="resident-text" id="resultDesc"></div>
+        </div>
+
+        <!-- View B: Architect Params -->
+        <div class="view-architect" id="viewArchitect">
+          <div class="architect-params" id="architectParams"></div>
+        </div>
+      </div>
+
+      <!-- Section 4: Actions -->
+      <div class="result-actions">
+        <button class="btn-primary" onclick="openModal()">🎁 免费生成我的专属 Aesthetic 3D 方案</button>
+        <button class="btn-secondary" onclick="shareLink()">👥 邀请家人一起测</button>
+        <span class="btn-text" onclick="saveCard()">↓ 保存我的专属猫猫卡片</span>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal-content">
+        <h3 class="modal-title">获取专属方案</h3>
+        <input type="text" class="modal-input" id="nameInput" placeholder="请输入您的称呼">
+        <input type="tel" class="modal-input" id="phoneInput" placeholder="请输入手机号">
+        <button class="modal-submit" onclick="submitForm()">提交</button>
+        <button class="modal-close" onclick="closeModal()">取消</button>
+        <p class="modal-hint">Aesthetic 引擎将在 24 小时内为您发送高清方案草图</p>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Screen 4: Duo Report -->
+    <div class="screen duo-screen" id="duoReport">
+      <div class="duo-report-content" id="duoReportContent">
+        <!-- 动态渲染双人报告 -->
+      </div>
+      
+      <!-- 双人报告操作按钮 -->
+      <div class="duo-actions">
+        <button class="btn-primary" onclick="openDuoModal()">🎁 获取你们的双人折中方案建议</button>
+        <button class="btn-secondary" onclick="restartDuoTest()">🔄 重新开始测试</button>
+      </div>
+    </div>
+
+    <!-- 双人报告 Modal -->
+    <div class="modal-overlay" id="duoModal">
+      <div class="modal-content">
+        <h3 class="modal-title">获取双人方案</h3>
+        <p class="modal-desc">设计师将基于你们的双人 DORA 代码，提供冲突化解式空间建议</p>
+        <input type="text" class="modal-input" id="duoNameInput" placeholder="请输入您的称呼">
+        <input type="tel" class="modal-input" id="duoPhoneInput" placeholder="请输入手机号">
+        <button class="modal-submit" onclick="submitDuoForm()">提交</button>
+        <button class="modal-close" onclick="closeDuoModal()">取消</button>
+        <p class="modal-hint">Aesthetic 团队将在 24 小时内为您发送双人空间建议</p>
+      </div>
+    </div>
+
+    <!-- 被邀请模式提示 -->
+    <div class="invite-toast" id="inviteToast">
+      <span class="invite-icon">👥</span>
+      <span class="invite-text">你正在帮家人完成空间偏好测试</span>
+    </div>
+  </div>
+
+  <script>
+    // ========== 双人裂变模式 ==========
+    const DuoStorage = {
+      KEY_USER_A: 'DORA_USER_A',
+      KEY_USER_B: 'DORA_USER_B',
+      KEY_INVITER: 'DORA_INVITER',
+      
+      // 生成唯一用户ID
+      generateUserId() {
+        return 'U_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+      },
+      
+      // 保存用户A结果
+      saveUserA(result) {
+        localStorage.setItem(this.KEY_USER_A, JSON.stringify(result));
+        localStorage.setItem(this.KEY_INVITER, result.userId);
+      },
+      
+      // 保存用户B结果
+      saveUserB(result) {
+        localStorage.setItem(this.KEY_USER_B, JSON.stringify(result));
+      },
+      
+      // 获取用户A结果
+      getUserA() {
+        const data = localStorage.getItem(this.KEY_USER_A);
+        return data ? JSON.parse(data) : null;
+      },
+      
+      // 获取用户B结果
+      getUserB() {
+        const data = localStorage.getItem(this.KEY_USER_B);
+        return data ? JSON.parse(data) : null;
+      },
+      
+      // 检查是否有双人报告条件
+      hasDuoReport() {
+        return this.getUserA() && this.getUserB();
+      },
+      
+      // 生成邀请链接（包含用户A的结果数据）
+      generateInviteLink(inviterId) {
+        const userA = this.getUserA();
+        const baseUrl = window.location.origin + window.location.pathname;
+        
+        if (userA && userA.answers) {
+          // 将用户A的答案编码到URL中
+          const answersStr = userA.answers.join(',');
+          const doraCode = userA.doraCode || '';
+          return baseUrl + '?inviter=' + inviterId + '&codeA=' + doraCode + '&answersA=' + answersStr;
+        }
+        
+        return baseUrl + '?inviter=' + inviterId;
+      },
+      
+      // 获取URL参数
+      getUrlParam(param) {
+        const params = new URLSearchParams(window.location.search);
+        return params.get(param);
+      },
+      
+      // 清除双人数据（用于重新开始）
+      clearDuoData() {
+        localStorage.removeItem(this.KEY_USER_A);
+        localStorage.removeItem(this.KEY_USER_B);
+        localStorage.removeItem(this.KEY_INVITER);
+      }
+    };
+
+    // 维度名称映射
+    const dimNames = {
+      'D': '空间边界',
+      'O': '秩序结构',
+      'R': '空间温度',
+      'A': '审美优先'
+    };
+
+    // ========== 双人报告核心数据字典 ==========
+    const duo_data = {
+      "naming_rules": {
+        "match_names": {
+          "EIOV": "侘寂派联盟", "EIOS": "隐逸派联盟", "EIMV": "极简派联盟", "EIMS": "架构派联盟",
+          "ECOV": "策展派联盟", "ECOS": "烟火派联盟", "ECMV": "先锋派联盟", "ECMS": "创客派联盟",
+          "DIOV": "隐士派联盟", "DIOS": "理性派联盟", "DIMV": "高定派联盟", "DIMS": "冷静派联盟",
+          "DCOV": "收藏家联盟", "DCOS": "治愈派联盟", "DCMV": "赛博派联盟", "DCMS": "发烧友联盟"
+        },
+        "conflict_names": {
+          "single": {
+            "D": "流动边界组",
+            "O": "收放平衡组",
+            "R": "冷暖博弈组",
+            "A": "理性浪漫组"
+          },
+          "multiple": ["空间博弈组", "互补生活组", "和而不同组"]
+        }
+      },
+      "dimensions": {
+        "D": {
+          "name": "空间边界",
+          "match_texts": {
+            "E": "你们都偏向「空间流动」。客餐厨一体、开阔动线会成为你们的共识。",
+            "D": "你们都重视「边界清晰」。独立书房、封闭厨房会让彼此更安心。"
+          },
+          "conflict_text": {
+            "insight": "一位渴望空间的连通与随时互动，另一位极其需要一道门来保障专注与绝对私密。",
+            "aesthetic_solution": "💡 Aesthetic 建议：采用「柔性边界」。生成隐藏式推拉门或透光不透影的长虹玻璃隔断。打开时空间连为一体，关上时给予绝对庇护。"
+          }
+        },
+        "O": {
+          "name": "秩序结构",
+          "match_texts": {
+            "I": "你们都希望空间保持克制。高比例隐藏收纳、台面空无一物是你们的安全区。",
+            "C": "你们都愿意让生活被看见。展示架与开放层板会成为家的主角。"
+          },
+          "conflict_text": {
+            "insight": "一位信奉「眼不见为净」需要清空大脑，另一位觉得把心爱器物展示出来才有烟火气。",
+            "aesthetic_solution": "💡 Aesthetic 建议：执行「二八定律」。规划 80% 极致隐形柜体满足强迫症，在视线黄金分割点切出 20% 开放层板作为专属策展领地。"
+          }
+        },
+        "R": {
+          "name": "空间温度",
+          "match_texts": {
+            "O": "你们都依赖温度放松。木质、布艺与暖光会成为空间的底色。",
+            "M": "你们都偏爱清晰与克制。冷感材质、金属与线性光源会让你们更舒适。"
+          },
+          "conflict_text": {
+            "insight": "这是最诚实的身体反应差异。一位依赖温润包裹感，另一位在冷感与明亮中才觉得高级。",
+            "aesthetic_solution": "💡 Aesthetic 建议：采用「材质对撞与双轨光影」。冷感硬装搭配温润软装，并植入可调色温的无主灯系统，白天明亮清透，夜晚慵懒庇护。"
+          }
+        },
+        "A": {
+          "name": "审美优先",
+          "match_texts": {
+            "V": "你们都愿意为「视觉表达」买单。空间会拥有鲜明的艺术记忆点。",
+            "S": "你们都优先考虑长期使用体验。隐形系统与极致坪效将成为家的核心。"
+          },
+          "conflict_text": {
+            "insight": "一位愿意为艺术造型付出极高的审美溢价，另一位极其务实，只愿把钱砸在看不见的隐蔽工程上。",
+            "aesthetic_solution": "💡 Aesthetic 建议：「隐形科技藏入高定美学」。硬装造型做减法留给智能中枢与新风系统，但在绝对 C 位留足预算购买一件极具张力的艺术单品。"
+          }
+        }
+      }
+    };
+
+    // 维度对比描述
+    const dimDescriptions = {
+      'D': {
+        'E': '开放社交',
+        'D': '独立私密'
+      },
+      'O': {
+        'I': '整洁隐藏',
+        'C': '展示陈列'
+      },
+      'R': {
+        'O': '自然温润',
+        'M': '冷静理性'
+      },
+      'A': {
+        'V': '视觉先锋',
+        'S': '系统实用'
+      }
+    };
+
+    // 双人报告组合名称 - 使用 duo_data
+    const duoTitles = duo_data.naming_rules;
+
+    // 生成双人报告
+    function generateDuoReport(userA, userB) {
+      const codeA = userA.doraCode;
+      const codeB = userB.doraCode;
+      
+      // 按维度对比
+      const dims = ['D', 'O', 'R', 'A'];
+      const comparisons = [];
+      let matchCount = 0;
+      let conflictDim = null; // 记录唯一冲突的维度
+      
+      dims.forEach((dim, index) => {
+        const valA = codeA[index];
+        const valB = codeB[index];
+        const isMatch = valA === valB;
+        
+        if (isMatch) {
+          matchCount++;
+        } else {
+          conflictDim = dim; // 记录冲突维度（用于单维度冲突命名）
+        }
+        
+        comparisons.push({
+          dim: dim,
+          dimName: duo_data.dimensions[dim].name,
+          valA: valA,
+          valB: valB,
+          isMatch: isMatch,
+          // 匹配时的共识文案
+          matchText: isMatch ? duo_data.dimensions[dim].match_texts[valA] : null,
+          // 冲突时的洞察和解决方案
+          conflictInsight: !isMatch ? duo_data.dimensions[dim].conflict_text.insight : null,
+          conflictAestheticSolution: !isMatch ? duo_data.dimensions[dim].conflict_text.aesthetic_solution : null
+        });
+      });
+      
+      // 计算匹配度
+      const matchRate = Math.round((matchCount / 4) * 100);
+      
+      // 生成标题
+      let title;
+      if (matchCount === 4) {
+        // 100% 完全一致，读取 match_names
+        title = duoTitles.match_names[codeA] || '完美联盟';
+      } else if (matchCount === 3) {
+        // 75% 单维度冲突，读取 conflict_names.single[维度]
+        title = duoTitles.conflict_names.single[conflictDim] || '博弈组';
+      } else {
+        // ≤50% 多维度冲突，随机读取 conflict_names.multiple
+        const multipleNames = duoTitles.conflict_names.multiple;
+        title = multipleNames[Math.floor(Math.random() * multipleNames.length)];
+      }
+      
+      return {
+        codeA: codeA,
+        codeB: codeB,
+        matchRate: matchRate,
+        matchCount: matchCount,
+        title: title,
+        comparisons: comparisons,
+        matches: comparisons.filter(c => c.isMatch),
+        conflicts: comparisons.filter(c => !c.isMatch)
+      };
+    }
+
+    // 渲染双人报告页面
+    function renderDuoReport(report) {
+      const container = document.getElementById('duoReportContent');
+      
+      // 获取双人猫猫图片
+      const catImgA = catImages[report.codeA] || '';
+      const catImgB = catImages[report.codeB] || '';
+      
+      let html = `
+        <div class="duo-header">
+          <div class="duo-cat-icons">
+            <div class="duo-cat-item">
+              ${catImgA ? `<img src="${catImgA}" alt="Cat A" style="width:105px;height:105px;object-fit:contain;border-radius:12px;">` : '🐱'}
+              <span class="duo-cat-code">${report.codeA}</span>
+            </div>
+            <span class="duo-vs">×</span>
+            <div class="duo-cat-item">
+              ${catImgB ? `<img src="${catImgB}" alt="Cat B" style="width:105px;height:105px;object-fit:contain;border-radius:12px;">` : '🐱'}
+              <span class="duo-cat-code">${report.codeB}</span>
+            </div>
+          </div>
+          <h2 class="duo-title">${report.title}</h2>
+          <div class="duo-match-rate">
+            <div class="match-rate-bar">
+              <div class="match-rate-fill" style="width: ${report.matchRate}%"></div>
+            </div>
+            <span class="rate-value">${report.matchRate}%</span>
+            <span class="rate-label">空间默契度</span>
+          </div>
+        </div>
+        
+        <!-- 共识区（安全区） -->
+        ${report.matches.length > 0 ? `
+        <div class="duo-section duo-section-match">
+          <h3 class="duo-section-title">✅ 共识区</h3>
+          ${report.matches.map(m => `
+            <div class="duo-item duo-item-match">
+              <div class="duo-item-content">
+                <p class="duo-item-dim">「${m.dimName}」</p>
+                <p class="duo-item-desc">${m.matchText}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+        
+        <!-- 差异区（冲突预警与化解） -->
+        ${report.conflicts.length > 0 ? `
+        <div class="duo-section duo-section-conflict">
+          <h3 class="duo-section-title">⚠️ 差异预警</h3>
+          ${report.conflicts.map(c => `
+            <div class="duo-item duo-item-conflict">
+              <div class="duo-item-content">
+                <p class="duo-item-dim">「${c.dimName}」</p>
+                <p class="duo-item-insight">${c.conflictInsight}</p>
+              </div>
+            </div>
+            <div class="duo-aesthetic-solution">
+              <div class="aesthetic-solution-header">💡 Aesthetic 折中方案</div>
+              <p class="aesthetic-solution-text">${c.conflictAestheticSolution.replace('💡 Aesthetic 建议：', '')}</p>
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+      `;
+      
+      container.innerHTML = html;
+    }
+
+    // ========== DORA Code 猫猫图片映射 ==========
+    const catImages = {
+      'DIOS': './images/DIOS.jpg',
+      'DIOV': './images/DIOV.jpg',
+      'ECMS': './images/ECMS.jpg',
+      'ECMV': './images/ECMV.jpg',
+      'ECOS': './images/ECOS.jpg',
+      'ECOV': './images/ECOV.jpg',
+      'EIMS': './images/EIMS.jpg',
+      'EIMV': './images/EIMV.jpg',
+      'EIOS': './images/EIOS.jpg',
+      'EIOV': './images/EIOV.jpg',
+      'DCMS': './images/DCMS.jpg',
+      'DCMV': './images/DCMV.jpg',
+      'DCOS': './images/DCOS.jpg',
+      'DCOV': './images/DCOV.jpg',
+      'DIMS': './images/DIMS.jpg',
+      'DIMV': './images/DIMV.jpg'
+    };
+
+    // ========== 题目数据 ==========
+    const questions = [
+      {
+        dimension: 'D', dimensionLabel: 'DOMAIN · 01/02',
+        question: '需要专注处理工作或沉浸在自己的爱好里，你更习惯走向哪里？',
+        options: [
+          { letter: 'E', text: '客餐厅中央的长桌，空间开阔通透，能感知光线流动，毫无压抑感', img: './images/Q1-1.png' },
+          { letter: 'D', text: '专属的独立书房或小房间，轻轻关门，享受绝对安静的包裹感', img: './images/Q1-2.png' }
+        ]
+      },
+      {
+        dimension: 'D', dimensionLabel: 'DOMAIN · 02/02',
+        question: '理想的周末傍晚，你更希望家里发生哪种画面？',
+        options: [
+          { letter: 'E', text: '朋友围坐聊天，厨房准备晚餐，客厅有人玩游戏，整个空间连在一起', img: './images/Q2-1.png' },
+          { letter: 'D', text: '在客厅安静看书，厨房门关着，每个空间各自完整，互不打扰', img: './images/Q2-2.png' }
+        ]
+      },
+      {
+        dimension: 'O', dimensionLabel: 'ORDER · 01/02',
+        question: '窝在沙发上环顾四周，你最希望眼前的这面主墙呈现出怎样的状态？',
+        options: [
+          { letter: 'I', text: '干净利落，严丝合缝，所有杂物完美隐藏，视线只留一片清爽', img: './images/Q3-1.png' },
+          { letter: 'C', text: '错落有致，充满故事，画册、摆件、黑胶唱片大方陈列在层板上', img: './images/Q3-2.png' }
+        ]
+      },
+      {
+        dimension: 'O', dimensionLabel: 'ORDER · 02/02',
+        question: '当你离开家一整天，再次推门进来，你更希望看到哪种状态？',
+        options: [
+          { letter: 'I', text: '空间像刚被精心打理过，没有任何多余物品，一切都在该在的位置', img: './images/Q4-1.png' },
+          { letter: 'C', text: '空间能一眼看出"有人在生活"，书翻开着，杯子放在手边', img: './images/Q4-2.png' }
+        ]
+      },
+      {
+        dimension: 'R', dimensionLabel: 'TEMPER · 01/02',
+        question: '靠在沙发上休息，手边和脚下接触到的材质，你更偏爱哪种质感？',
+        options: [
+          { letter: 'O', text: '自然纹理的实木或柔软棉麻布艺，触手生温，空间充满呼吸感', img: './images/Q5-1.png' },
+          { letter: 'M', text: '平滑微凉的微水泥、大理石或金属，克制干净，折射高级光泽', img: './images/Q5-2.png' }
+        ]
+      },
+      {
+        dimension: 'R', dimensionLabel: 'TEMPER · 02/02',
+        question: '午后，当阳光透过窗户洒进室内，你希望光线打在什么样的表面上？',
+        options: [
+          { letter: 'O', text: '光线落在木纹或织物上，被轻轻吸收，形成柔和有层次的阴影', img: './images/Q6-1.png' },
+          { letter: 'M', text: '光线被石材或金属表面直接反射，形成清晰锐利的明暗边界', img: './images/Q6-2.png' }
+        ]
+      },
+      {
+        dimension: 'A', dimensionLabel: 'TASTE · 01/02',
+        question: '装修快结束了，你还能为客厅多花一笔预算，你会用在？',
+        options: [
+          { letter: 'V', text: '悬浮吊顶或造型感极强的艺术沙发，让空间在视觉上"多走一步"', img: './images/Q7-1.png' },
+          { letter: 'S', text: '表面看起来没什么变化，把预算投入新风系统、智能灯控等隐蔽系统', img: './images/Q7-2.jpg' }
+        ]
+      },
+      {
+        dimension: 'A', dimensionLabel: 'TASTE · 02/02',
+        question: '如果家里多出 2 平米完全空白的区域，你会怎么利用它？',
+        options: [
+          { letter: 'V', text: '留给纯粹的视觉享受，巨幅画作、姿态极美的植物，或彻底留白', img: './images/Q8-1.png' },
+          { letter: 'S', text: '用来补齐实用环节，收纳柜、扫地机基站或饮水充电角', img: './images/Q8-2.jpg' }
+        ]
+      }
+    ];
+
+    const profiles = {
+      "EIOV": {
+        name: "侘寂美学家",
+        quote: "你不需要用物品填满空间，因为对你而言，留白本身就是最高级的艺术。",
+        user_report: "你渴望空间如旷野般通透，容不下任何琐碎的杂物。你迷恋自然材质的呼吸感，愿意为了一面拥有完美肌理的艺术墙或一把大师级单椅掷千金。你的家，是一座只属于你自己的精神禅院。",
+        aesthetic_params: "[ D ] 策略：Expansive 无界延展 | 指令：全屋打通，极致开阔\n[ O ] 策略：Invisible 极简隐形 | 指令：100%隐形收纳，消除柜子存在感\n[ R ] 策略：Organic 有机温润 | 指令：暖色微水泥+老木头+亚麻，3000K柔光\n[ A ] 策略：Visionary 视觉先锋 | 指令：预算重仓高端艺术涂料与大师孤品家具"
+      },
+      "EIOS": {
+        name: "隐逸生活家",
+        quote: "你把生活做到了极简，只为把空间还给阳光、微风与绝对的舒适。",
+        user_report: "你向往通透无碍的大空间，但又极度自律，容不下任何视觉噪音。你偏爱木材与阳光带来的温暖治愈，在消费决策上却异常清醒——比起昂贵的艺术造型，你更在意一张床垫的支撑力和空间是否真正好住。",
+        aesthetic_params: "[ D ] 策略：Expansive 无界延展 | 指令：空间最大化打通，极致采光\n[ O ] 策略：Invisible 极简隐形 | 指令：极简隐藏收纳，融入墙体结构\n[ R ] 策略：Organic 有机温润 | 指令：浅色木饰面+柔光砖，暖色氛围光\n[ A ] 策略：Systematic 系统架构 | 指令：硬装极简，预算重仓高品质五金与人体工学家具"
+      },
+      "EIMV": {
+        name: "极简策展人",
+        quote: "你不是在居住，你是在经营一座属于自己的、完美无瑕的现代美术馆。",
+        user_report: "你对空间的克制有着近乎偏执的追求。你喜欢大理石的冰冷、金属的反射，以及毫无生活杂质的纯粹感。你把家当成一件巨大的现代艺术品来打造，每一寸光影、每一根线条，都必须完美无瑕。",
+        aesthetic_params: "[ D ] 策略：Expansive 无界延展 | 指令：超大方厅，去客厅化，画廊级陈列空间\n[ O ] 策略：Invisible 极简隐形 | 指令：全封闭烤漆柜，台面绝对净空\n[ R ] 策略：Mineral 矿石无机 | 指令：大面积奢石+不锈钢，4000K高显指射灯\n[ A ] 策略：Visionary 视觉先锋 | 指令：预算重仓奢石背景墙与悬浮硬装造型"
+      },
+      "EIMS": {
+        name: "系统极客派",
+        quote: "对你而言，空间不是用来装饰的，而是一台精密运转、隐形伺服的机器。",
+        user_report: "你不需要华而不实的造型，但对空间的底层逻辑要求极高。你喜欢通透的视野和毫无阻碍的动线，所有的杂物都被完美编排在隐形柜中。你最愿意投资的，是那些看不见却能极大提升生活效率的硬核科技。",
+        aesthetic_params: "[ D ] 策略：Expansive 无界延展 | 指令：LDK一体化，生成大型多功能中岛台\n[ O ] 策略：Invisible 极简隐形 | 指令：顶天立地极简柜，家电100%全嵌\n[ R ] 策略：Mineral 矿石无机 | 指令：深灰/纯白主色调，哑光地砖与金属\n[ A ] 策略：Systematic 系统架构 | 指令：取消复杂硬装，预算重仓全屋智能与恒温恒湿系统"
+      },
+      "ECOV": {
+        name: "无界策展人",
+        quote: "你拒绝被墙壁定义，你的家是一场永不落幕的、充满温度的私人展览。",
+        user_report: "你是一个浪漫的无界策展人。对你而言，家不是一个个封闭的盒子，而是一座流动的私人美术馆。你迷恋自然材质带来的呼吸感，也乐于将收集来的器物、书籍和记忆大方展示。你愿意为美学买单，因为你深知，被美好的事物包裹，是对抗平庸日常最好的方式。",
+        aesthetic_params: "[ D ] 策略：Expansive 无界延展 | 指令：砸除非承重墙，LDK完全一体化\n[ O ] 策略：Curated 艺术策展 | 指令：增加开放式原木层板与玻璃展示柜\n[ R ] 策略：Organic 有机温润 | 指令：原木+暖色微水泥+藤编，3000K落地灯\n[ A ] 策略：Visionary 视觉先锋 | 指令：重点预算投入弧形门洞与高颜值单椅"
+      },
+      "ECOS": {
+        name: "烟火主理人",
+        quote: "你不在乎样板间般的完美，你只在乎空间里是否装满了热气腾腾的生活。",
+        user_report: "你不喜欢冷冰冰的样板间，家对你来说是家人互动、朋友聚会的能量场。你乐于把好看的餐具、书籍展示出来，让空间充满呼吸感。同时你非常务实，会把钱花在真正好用的家电和舒适的沙发上。",
+        aesthetic_params: "[ D ] 策略：Expansive 无界延展 | 指令：开放式厨房，强化客餐厅互动动线\n[ O ] 策略：Curated 艺术策展 | 指令：柜体二八定律，20%开放式展示区\n[ R ] 策略：Organic 有机温润 | 指令：原木色饰面+棉麻布艺+暖色柔光砖\n[ A ] 策略：Systematic 系统架构 | 指令：预算重仓高品质人体工学家具与净水系统"
+      },
+      "ECMV": {
+        name: "先锋主理人",
+        quote: "你不是在装修一个家，你是在搭建一个极具视觉冲击力的先锋舞台。",
+        user_report: "你拒绝平庸。你的家就是一个前卫的潮流买手店。你喜欢通透无界的空间感，偏爱金属、玻璃带来的冷峻与酷炫。你有着强烈的展示欲，愿意为了那些极具视觉冲击力的设计单品和展陈空间，毫不犹豫地买单。",
+        aesthetic_params: "[ D ] 策略：Expansive 无界延展 | 指令：Loft式全开放布局，打破常规房间界限\n[ O ] 策略：Curated 艺术策展 | 指令：大量调用USM金属模块柜与透明亚克力展示墙\n[ R ] 策略：Mineral 矿石无机 | 指令：水泥自流平+不锈钢，高对比度轨道射灯\n[ A ] 策略：Visionary 视觉先锋 | 指令：预算重仓定制级金属展柜与潮流先锋家具"
+      },
+      "ECMS": {
+        name: "工业创客派",
+        quote: "家不是让你躺平的避风港，而是你随时准备创造与折腾的超级工作室。",
+        user_report: "你把家当成了你的超级工作室。你需要大空间来释放创造力，喜欢把各种硬核装备、工具大方地展示出来。比起花里胡哨的装饰，你更看重材料的耐造程度和空间的功能延展性。",
+        aesthetic_params: "[ D ] 策略：Expansive 无界延展 | 指令：客餐厅与工作区完全融合，生成超大工作台\n[ O ] 策略：Curated 艺术策展 | 指令：大面积洞洞板上墙，开放式工具柜\n[ R ] 策略：Mineral 矿石无机 | 指令：裸露管线工业风，耐磨地坪漆与金属网\n[ A ] 策略：Systematic 系统架构 | 指令：预算重仓顶级工作站设备与高品质五金"
+      },
+      "DIOV": {
+        name: "东方隐士派",
+        quote: "你用明确的边界把喧嚣挡在门外，只为在方寸之间，守住绝对的禅意与宁静。",
+        user_report: "你对空间的边界感有着极高的要求，需要绝对安静的独立场域来安放灵魂。你追求「空无一物」的禅意，偏爱木、竹、纸等自然材质。你愿意为了营造一种高级的东方美学意境，投入极大的心血。",
+        aesthetic_params: "[ D ] 策略：Defined 精准划定 | 指令：明确空间划分，生成独立茶室/书房\n[ O ] 策略：Invisible 极简隐形 | 指令：全屋隐形收纳，柜门无把手营造「空」的境界\n[ R ] 策略：Organic 有机温润 | 指令：胡桃木+藤编+宣纸，3000K见光不见灯\n[ A ] 策略：Visionary 视觉先锋 | 指令：预算重仓实木定制格栅与东方意境造景"
+      },
+      "DIOS": {
+        name: "理性生活家",
+        quote: "你不为虚荣的审美买单，你只需要明确的边界和绝对靠谱的舒适感。",
+        user_report: "家对你来说，是卸下防备的避风港。你需要明确的房间来保障隐私和睡眠质量。你喜欢把东西都藏起来，让视线保持清爽，同时偏爱温暖治愈的色调。你绝不为智商税设计买单，每一分钱都花在能提升居住舒适度的刀刃上。",
+        aesthetic_params: "[ D ] 策略：Defined 精准划定 | 指令：标准动静分区，强化卧室与卫浴独立性\n[ O ] 策略：Invisible 极简隐形 | 指令：大容量顶天立地定制柜，完善内部分类系统\n[ R ] 策略：Organic 有机温润 | 指令：环保级原木色板材+哑光柔光砖\n[ A ] 策略：Systematic 系统架构 | 指令：预算重仓高品质床垫、静音门窗与好用的卫浴"
+      },
+      "DIMV": {
+        name: "高定精英派",
+        quote: "你不需要向谁展示生活，你只用最冷峻的材质，包裹最昂贵、最私密的品味。",
+        user_report: "你习惯了五星级酒店的行政套房，需要空间有明确的功能划分和绝对的私密性。你迷恋大理石、深色皮革和金属带来的冷峻高级感，且容不下任何破坏视觉的杂物。你追求的是一种克制却极其昂贵的美学。",
+        aesthetic_params: "[ D ] 策略：Defined 精准划定 | 指令：打造超大豪华主卧套房（含独立衣帽间）\n[ O ] 策略：Invisible 极简隐形 | 指令：高光烤漆或皮革硬包隐形柜门\n[ R ] 策略：Mineral 矿石无机 | 指令：深色大理石+黑胡桃木+拉丝黑钛不锈钢\n[ A ] 策略：Visionary 视觉先锋 | 指令：预算重仓奢石应用、高定护墙板与意大利进口家具"
+      },
+      "DIMS": {
+        name: "极简架构师",
+        quote: "你把家分割成绝对专注的领地，用极致的理性和隐形系统掌控着一切。",
+        user_report: "你是一个极致理性的极客架构师。你信奉数字时代的极简主义，空间对你来说是一台精密运转的机器。你不仅需要明确的动静分区来保证专注力，更追求眼不见为净的绝对秩序。对于全屋智能和顶尖系统的投入，你毫不手软。",
+        aesthetic_params: "[ D ] 策略：Defined 精准划定 | 指令：保留物理隔断，确保主卧、书房拥有绝对封闭性\n[ O ] 策略：Invisible 极简隐形 | 指令：100%全封闭柜体，台面强制清空\n[ R ] 策略：Mineral 矿石无机 | 指令：不锈钢+大理石+深色烤漆，4000K线性洗墙灯\n[ A ] 策略：Systematic 系统架构 | 指令：预算重仓全屋智能中枢、新风净水与全嵌式家电"
+      },
+      "DCOV": {
+        name: "复古收藏家",
+        quote: "你用一道道门锁住旧时光，把家变成了一座安放记忆与热爱的复古藏宝阁。",
+        user_report: "你迷恋旧时光。你需要一个个独立的房间来安放你不同的情绪与藏品。你喜欢被柔软、有温度、有故事的旧物包围，乐于将淘来的中古家具、画作和书籍精心陈列。你愿意为了法式石膏线或一扇复古双开门，付出高昂的审美溢价。",
+        aesthetic_params: "[ D ] 策略：Defined 精准划定 | 指令：保留各房间独立性，推荐法式双开门或拱门\n[ O ] 策略：Curated 艺术策展 | 指令：复古玻璃展示柜+满墙开放式实木书架\n[ R ] 策略：Organic 有机温润 | 指令：人字拼实木地板+丝绒+黄铜+复古花砖\n[ A ] 策略：Visionary 视觉先锋 | 指令：预算重仓法式石膏线条、复古艺术涂料与中古家具"
+      },
+      "DCOS": {
+        name: "治愈造物家",
+        quote: "你需要一个不被打扰的专属角落，让时间慢下来，让热爱慢慢地生长。",
+        user_report: "你有着自己热爱的兴趣，并需要一个专属的房间来沉浸其中。你喜欢自然材质带来的踏实感，也乐于把心爱的工具和作品展示出来。你非常务实，更看重空间的功能分区和收纳系统的科学性。",
+        aesthetic_params: "[ D ] 策略：Defined 精准划定 | 指令：规划出明确的兴趣/家务空间（独立书房、大阳台花园）\n[ O ] 策略：Curated 艺术策展 | 指令：结合开放式层板与抽屉的综合收纳系统\n[ R ] 策略：Organic 有机温润 | 指令：白蜡木/樱桃木家具+棉麻+水磨石\n[ A ] 策略：Systematic 系统架构 | 指令：预算重仓科学收纳五金系统与实用兴趣操作台"
+      },
+      "DCMV": {
+        name: "赛博收藏家",
+        quote: "你把平庸的现实关在门外，在专属的领地里，建起了一座属于热爱与装备的精神神龛。",
+        user_report: "你的家不仅是休息的领地，更是你精神世界的硬核展厅。你需要独立的专属空间来沉浸自我。你迷恋金属、玻璃等冷调材质带来的未来感，也愿意一掷千金，只为打造一个极具视觉冲击力、能完美陈列你心爱装备的先锋阵地。",
+        aesthetic_params: "[ D ] 策略：Defined 精准划定 | 指令：划分出具有明确主题的独立房间（电竞房、潮玩室）\n[ O ] 策略：Curated 艺术策展 | 指令：置入透明亚克力展示盒与洞洞板，强调展陈感\n[ R ] 策略：Mineral 矿石无机 | 指令：深色玻璃+不锈钢，结合RGB智能彩光\n[ A ] 策略：Visionary 视觉先锋 | 指令：预算重仓酷炫灯光系统与定制展示柜"
+      },
+      "DCMS": {
+        name: "硬核发烧友",
+        quote: "你对美的定义无关风月，而是极致的性能、绝对的隔音和硬核的系统架构。",
+        user_report: "你需要一个绝对隔音、互不干扰的独立空间，来存放和展示你昂贵的数码、电竞或摄影装备。你偏爱金属与科技带来的冷峻感。你对美的定义，就是极致的性能、理性的线缆管理，以及顶级的系统架构。",
+        aesthetic_params: "[ D ] 策略：Defined 精准划定 | 指令：打造具有极强封闭性和隔音处理的独立房间\n[ O ] 策略：Curated 艺术策展 | 指令：金属服务器机架+洞洞板，强调装备的外露与规整\n[ R ] 策略：Mineral 矿石无机 | 指令：深色吸音板+水泥墙面+不锈钢桌面\n[ A ] 策略：Systematic 系统架构 | 指令：预算重仓全屋网络覆盖系统、顶级隔音门窗与专业升降桌"
+      }
+    };
+
+    let currentQuestion = 0;
+    let answers = [];
+    let currentCode = 'ECOS';
+
+    const landingScreen = document.getElementById('landing');
+    const quizScreen = document.getElementById('quiz');
+    const resultScreen = document.getElementById('result');
+    const progressBar = document.getElementById('progressBar');
+    const quizCount = document.getElementById('quizCount');
+    const dimensionLabel = document.getElementById('dimensionLabel');
+    const questionText = document.getElementById('questionText');
+    const quizOptions = document.getElementById('quizOptions');
+    const modal = document.getElementById('modal');
+    const toast = document.getElementById('toast');
+
+    function showScreen(screen) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      screen.classList.add('active');
+    }
+
+    function startQuiz() {
+      currentQuestion = 0;
+      answers = [];
+      showScreen(quizScreen);
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      const progress = ((currentQuestion + 1) / 8) * 100;
+      progressBar.style.width = progress + '%';
+      quizCount.textContent = String(currentQuestion + 1).padStart(2, '0') + '/08';
+      dimensionLabel.textContent = q.dimensionLabel;
+      questionText.textContent = q.question;
+      
+      quizOptions.innerHTML = '';
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('div');
+        btn.className = 'quiz-option';
+        btn.innerHTML = `
+          <img class="quiz-option-img" src="${opt.img}" alt="选项图片" loading="lazy">
+          <div class="quiz-option-overlay">
+            <p class="quiz-option-text">${opt.text}</p>
+          </div>
+        `;
+        btn.onclick = () => selectOption(index);
+        quizOptions.appendChild(btn);
+      });
+    }
+
+    function selectOption(index) {
+      // Haptic feedback
+      if (navigator.vibrate) navigator.vibrate(10);
+      
+      const q = questions[currentQuestion];
+      const selectedLetter = q.options[index].letter;
+      answers.push(selectedLetter);
+      
+      const options = document.querySelectorAll('.quiz-option');
+      options[index].classList.add('selected');
+      options.forEach(opt => opt.style.pointerEvents = 'none');
+      
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < 8) {
+          renderQuestion();
+        } else {
+          showResult();
+        }
+      }, 350);
+    }
+
+    function calculateResult() {
+      let d = answers[0] === 'E' && answers[1] === 'E' ? 'E' : 
+              answers[0] === 'D' && answers[1] === 'D' ? 'D' : answers[1];
+      let o = answers[2] === 'I' && answers[3] === 'I' ? 'I' : 
+              answers[2] === 'C' && answers[3] === 'C' ? 'C' : answers[3];
+      let r = answers[4] === 'O' && answers[5] === 'O' ? 'O' : 
+              answers[4] === 'M' && answers[5] === 'M' ? 'M' : answers[5];
+      let a = answers[6] === 'V' && answers[7] === 'V' ? 'V' : 
+              answers[6] === 'S' && answers[7] === 'S' ? 'S' : answers[7];
+      return d + o + r + a;
+    }
+
+    function showResult() {
+      currentCode = calculateResult();
+      const profile = profiles[currentCode] || profiles["ECOS"];
+      
+      document.getElementById('resultCode').textContent = currentCode;
+      document.getElementById('resultName').textContent = profile.name;
+      document.getElementById('resultQuote').textContent = '"' + profile.quote + '"';
+      
+      // 设置猫猫图片
+      const catIcon = document.querySelector('.result-cat-icon');
+      if (catIcon && catImages[currentCode]) {
+        catIcon.innerHTML = `<img src="${catImages[currentCode]}" alt="DORA Cat" style="width:100%;height:100%;object-fit:contain;border-radius:12px;">`;
+      }
+      
+      // Render Resident Report (View A) - 使用 user_report
+      const descContainer = document.getElementById('resultDesc');
+      descContainer.innerHTML = '';
+      const userReportText = profile.user_report || profile.desc || '';
+      userReportText.split('。').filter(s => s.trim()).forEach(para => {
+        const p = document.createElement('p');
+        p.textContent = para + '。';
+        descContainer.appendChild(p);
+      });
+      
+      // Render Architect Params (View B) - 使用 aesthetic_params 字符串
+      const paramsContainer = document.getElementById('architectParams');
+      paramsContainer.innerHTML = '';
+      
+      const aestheticParamsText = profile.aesthetic_params || '';
+      // 解析 aesthetic_params 字符串，格式：[ D ] 策略：XXX | 指令：XXX
+      const paramLines = aestheticParamsText.split('\n').filter(line => line.trim());
+      
+      paramLines.forEach((line, index) => {
+        // 提取维度、策略和指令
+        const dimMatch = line.match(/\[(\s*\w\s*)\]/);
+        const strategyMatch = line.match(/策略：([^|]+)/);
+        const commandMatch = line.match(/指令：(.+)/);
+        
+        if (dimMatch && strategyMatch && commandMatch) {
+          const dim = dimMatch[1].trim();
+          const strategy = strategyMatch[1].trim();
+          const command = commandMatch[1].trim();
+          
+          const div = document.createElement('div');
+          div.className = 'param-item';
+          div.style.opacity = '0';
+          div.style.transform = 'translateY(10px)';
+          
+          div.innerHTML = `
+            <p class="param-dim">[ ${dim} | ${getDimName(dim)} ]</p>
+            <p class="param-strategy">策略：${strategy}</p>
+            <p class="param-command">指令：${command}</p>
+          `;
+          
+          paramsContainer.appendChild(div);
+          
+          setTimeout(() => {
+            div.style.opacity = '1';
+            div.style.transform = 'translateY(0)';
+            div.style.transition = 'all 0.4s ease ' + (index * 0.1) + 's';
+          }, 100 + index * 100);
+        }
+      });
+      
+      // Reset to resident view
+      switchView('resident');
+      
+      // ========== 双人裂变模式：保存结果 ==========
+      const resultData = {
+        userId: DuoStorage.generateUserId(),
+        doraCode: currentCode,
+        answers: [...answers],
+        timestamp: Date.now()
+      };
+      
+      // 判断是用户A还是用户B
+      const inviterId = DuoStorage.getUrlParam('inviter');
+      const codeA = DuoStorage.getUrlParam('codeA');
+      const answersA = DuoStorage.getUrlParam('answersA');
+      
+      if (inviterId) {
+        // 用户B：通过URL参数获取用户A的数据（跨设备场景）
+        if (codeA && answersA) {
+          const userAFromUrl = {
+            userId: inviterId,
+            doraCode: codeA,
+            answers: answersA.split(',').map(Number),
+            timestamp: Date.now()
+          };
+          DuoStorage.saveUserA(userAFromUrl);
+        }
+        
+        // 用户B：保存结果并检查是否显示双人报告
+        DuoStorage.saveUserB(resultData);
+        
+        // 检查是否有双人报告条件
+        setTimeout(() => {
+          if (DuoStorage.hasDuoReport()) {
+            const userA = DuoStorage.getUserA();
+            const userB = DuoStorage.getUserB();
+            const report = generateDuoReport(userA, userB);
+            renderDuoReport(report);
+            showScreen(document.getElementById('duoReport'));
+          } else {
+            // 如果没有用户A数据，仍然显示单人结果
+            showScreen(resultScreen);
+          }
+        }, 500);
+      } else {
+        // 用户A：保存结果
+        DuoStorage.saveUserA(resultData);
+        showScreen(resultScreen);
+      }
+    }
+
+    function getDimName(dim) {
+      const names = {
+        'D': '空间边界',
+        'O': '秩序结构',
+        'R': '空间温度',
+        'A': '审美优先'
+      };
+      return names[dim] || dim;
+    }
+
+    function switchView(view) {
+      if (navigator.vibrate) navigator.vibrate(8);
+      
+      const slider = document.getElementById('toggleSlider');
+      const btnResident = document.getElementById('btnResident');
+      const btnArchitect = document.getElementById('btnArchitect');
+      const viewResident = document.getElementById('viewResident');
+      const viewArchitect = document.getElementById('viewArchitect');
+      
+      if (view === 'architect') {
+        slider.classList.add('right');
+        btnResident.classList.remove('active');
+        btnArchitect.classList.add('active');
+        viewResident.classList.add('hidden');
+        viewArchitect.classList.add('active');
+      } else {
+        slider.classList.remove('right');
+        btnResident.classList.add('active');
+        btnArchitect.classList.remove('active');
+        viewResident.classList.remove('hidden');
+        viewArchitect.classList.remove('active');
+      }
+    }
+
+    function openModal() {
+      if (navigator.vibrate) navigator.vibrate(15);
+      modal.classList.add('active');
+      document.getElementById('nameInput').value = '';
+      document.getElementById('phoneInput').value = '';
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+    }
+
+    // 腾讯文档收集表地址
+    const COLLECTION_FORM_URL = 'https://docs.qq.com/smartsheet/DVGZqdGxJcUJLb0ZY';
+    
+    function submitForm() {
+      const name = document.getElementById('nameInput').value.trim();
+      const phone = document.getElementById('phoneInput').value.trim();
+      
+      if (!name || !phone) {
+        showToast('请填写完整信息');
+        return;
+      }
+      
+      if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+      closeModal();
+      
+      // 获取当前DORA代码
+      const doraCode = document.getElementById('resultCode').textContent;
+      const doraName = document.getElementById('resultName').textContent;
+      
+      // 格式化数据用于粘贴到腾讯文档
+      const dataText = `称呼: ${name}\n手机号: ${phone}\nDORA代码: ${doraCode}\n人格类型: ${doraName}`;
+      
+      // 复制到剪贴板
+      navigator.clipboard.writeText(dataText).then(() => {
+        showToast('数据已复制，正在跳转收集表...');
+        // 3秒后跳转到腾讯文档收集表
+        setTimeout(() => {
+          window.location.href = COLLECTION_FORM_URL;
+        }, 2000);
+      }).catch(() => {
+        // 如果复制失败，直接跳转
+        showToast('正在跳转收集表...');
+        setTimeout(() => {
+          window.location.href = COLLECTION_FORM_URL;
+        }, 1500);
+      });
+    }
+
+    function shareLink() {
+      if (navigator.vibrate) navigator.vibrate(10);
+      
+      // 生成双人邀请链接
+      const userA = DuoStorage.getUserA();
+      const inviteLink = DuoStorage.generateInviteLink(userA.userId);
+      
+      navigator.clipboard.writeText(inviteLink).then(() => {
+        showToast('邀请链接已复制，快发给家人一起测');
+      }).catch(() => {
+        // 如果复制失败，显示链接让用户手动复制
+        prompt('请复制以下链接发送给家人:', inviteLink);
+      });
+    }
+
+    function saveCard() {
+      if (navigator.vibrate) navigator.vibrate(10);
+      
+      const identitySection = document.querySelector('.result-identity');
+      if (!identitySection) {
+        showToast('无法生成卡片');
+        return;
+      }
+      
+      showToast('正在生成卡片...');
+      
+      // 使用html2canvas截图
+      html2canvas(identitySection, {
+        backgroundColor: '#06080c',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false
+      }).then(canvas => {
+        // 转换为图片并下载
+        const link = document.createElement('a');
+        const code = document.getElementById('resultCode')?.textContent || 'dora';
+        link.download = `DORA-${code}-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+        if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+        showToast('卡片已保存！');
+      }).catch(err => {
+        console.error('生成卡片失败:', err);
+        showToast('生成失败，请重试');
+      });
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('active');
+      setTimeout(() => {
+        toast.classList.remove('active');
+      }, 2200);
+    }
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // ========== 双人Modal函数 ==========
+    function openDuoModal() {
+      if (navigator.vibrate) navigator.vibrate(15);
+      document.getElementById('duoModal').classList.add('active');
+      document.getElementById('duoNameInput').value = '';
+      document.getElementById('duoPhoneInput').value = '';
+    }
+
+    function closeDuoModal() {
+      document.getElementById('duoModal').classList.remove('active');
+    }
+
+    function submitDuoForm() {
+      const name = document.getElementById('duoNameInput').value.trim();
+      const phone = document.getElementById('duoPhoneInput').value.trim();
+      
+      if (!name || !phone) {
+        showToast('请填写完整信息');
+        return;
+      }
+      
+      if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+      closeDuoModal();
+      
+      // 获取双人DORA代码
+      const userA = DuoStorage.getUserA();
+      const userB = DuoStorage.getUserB();
+      const codeA = userA ? userA.doraCode : '';
+      const codeB = userB ? userB.doraCode : '';
+      
+      // 格式化数据用于粘贴到腾讯文档
+      const dataText = `称呼: ${name}\n手机号: ${phone}\n用户A代码: ${codeA}\n用户B代码: ${codeB}`;
+      
+      // 复制到剪贴板
+      navigator.clipboard.writeText(dataText).then(() => {
+        showToast('数据已复制，正在跳转收集表...');
+        // 3秒后跳转到腾讯文档收集表
+        setTimeout(() => {
+          window.location.href = COLLECTION_FORM_URL;
+        }, 2000);
+      }).catch(() => {
+        // 如果复制失败，直接跳转
+        showToast('正在跳转收集表...');
+        setTimeout(() => {
+          window.location.href = COLLECTION_FORM_URL;
+        }, 1500);
+      });
+    }
+
+    function restartDuoTest() {
+      // 清除双人数据
+      DuoStorage.clearDuoData();
+      // 重新加载页面
+      window.location.href = window.location.pathname;
+    }
+
+    // ========== 页面初始化 ==========
+    (function init() {
+      // 检查是否被邀请
+      const inviterId = DuoStorage.getUrlParam('inviter');
+      if (inviterId) {
+        // 显示被邀请提示
+        const inviteToast = document.getElementById('inviteToast');
+        if (inviteToast) {
+          inviteToast.classList.add('show');
+          // 3秒后隐藏
+          setTimeout(() => {
+            inviteToast.classList.remove('show');
+          }, 3000);
+        }
+      }
+      
+      // 检查是否已有双人报告可查看（可选功能）
+      // 如果用户A已完成测试，可以通过某个入口查看双人报告
+    })();
+  </script>
+</body>
+</html>
